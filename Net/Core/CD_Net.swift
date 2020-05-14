@@ -14,6 +14,11 @@ import Foundation
 import Alamofire
 import CaamDauExtension
 
+var Net:CD_Net {
+    return CD_Net()
+}
+
+
 extension CD_Net {
     public enum RequestStyle {
         case data
