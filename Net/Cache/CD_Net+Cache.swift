@@ -10,21 +10,24 @@
 import Foundation
 import Cache
 import CaamDauExtension
+
+public let storage:Storage<Data>? = {
+    return try? Storage<Data>(diskConfig: DiskConfig(name: CD.appId), memoryConfig: MemoryConfig(expiry: .never, countLimit: 10, totalCostLimit: 10), transformer: TransformerFactory.forData())
+}()
+
 public extension CD_Net {
-    func makeStorage() -> Storage<Data>? {
-        return try? Storage<Data>(diskConfig: DiskConfig(name: CD.appId), memoryConfig: MemoryConfig(expiry: .never, countLimit: 10, totalCostLimit: 10), transformer: TransformerFactory.forData())
-    }
-    
     /// 默认使用 url ,相同url 增加 key 标识
     @discardableResult
     func onCache(withData key:String = "", completion:((Data) ->Void)?) -> Self {
         let urlPath = (self.baseURL + self.path) + (key.isEmpty ? "" : ("."+key))
-        let storage = self.makeStorage()
-        if let data = try? storage?.object(forKey: urlPath) {
-            completion?(data)
-        }else{
-            failure?(CD_Net.Error(code: -1100, massage: ""))
-        }
+        storage?.async.object(forKey: urlPath, completion: { [weak self](result) in
+            switch result {
+              case .value(let data):
+                completion?(data)
+              case .error(let error):
+                self?.failure?(CD_Net.Error(code: -1100, massage: ""))
+            }
+        })
         return self
     }
     
@@ -34,29 +37,52 @@ public extension CD_Net {
             guard when(res) else {return}
             guard let self = self else { return }
             let urlPath = (self.baseURL + self.path) + (key.isEmpty ? "" : ("."+key))
-            let storage = self.makeStorage()
             if let custom = customCache?(res) {
-                try? storage?.setObject(custom, forKey: urlPath)
+                storage?.async.setObject(custom, forKey: urlPath, completion: { (result) in
+                    switch result {
+                      case .value:
+                        break
+                      case .error(let error):
+                        print_cd(error)
+                    }
+                })
             }else{
-                try? storage?.setObject(res, forKey: urlPath)
+                storage?.async.setObject(res, forKey: urlPath, completion: { (result) in
+                    switch result {
+                      case .value:
+                        break
+                      case .error(let error):
+                        print_cd(error)
+                    }
+                })
             }
         }
         return self
     }
     
     @discardableResult
-    func removeCache(withData key:String) -> Self {
+    func removeCache(withData key:String, completion:((Bool) ->Void)? = nil) -> Self {
         let urlPath = (self.baseURL + self.path) + (key.isEmpty ? "" : ("."+key))
-        let storage = self.makeStorage()
-        try? storage?.removeObject(forKey: urlPath)
+        storage?.async.removeObject(forKey: urlPath, completion: { (result) in
+            switch result {
+              case .value:
+                completion?(true)
+              case .error(let error):
+                completion?(false)
+            }
+        })
         return self
     }
     
-    static func removeAllCacheData() {
-        DispatchQueue.global(qos: .default).async {
-            let storage = try? Storage<Data>(diskConfig: DiskConfig(name: CD.appId), memoryConfig: MemoryConfig(expiry: .never, countLimit: 10, totalCostLimit: 10), transformer: TransformerFactory.forData())
-            try? storage?.removeAll()
-        }
+    static func removeAllCacheData(_ completion:((Bool) ->Void)? = nil) {
+        storage?.async.removeAll(completion: { result in
+            switch result {
+              case .value:
+                completion?(true)
+              case .error(let error):
+                completion?(false)
+            }
+        })
     }
 }
 

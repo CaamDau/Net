@@ -8,8 +8,10 @@
 
 import Foundation
 import UIKit
+import CaamDauExtension
 import CaamDauNet
-
+import SwiftyJSON
+import Cache
 class ViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
@@ -24,7 +26,7 @@ class ViewController: UIViewController {
             .method(.get)
             .parameters(["foo": "bar"])
             .onCache(completion: { (data) in
-                //debugPrint("Cache JSON:", json)
+                debugPrint("Cache JSON:", JSON(data))
             })
             .toCache(when: {_ in page == 1})
             .success({ (res) in
@@ -50,6 +52,10 @@ class ViewController: UIViewController {
             //.request(isSubjoin: false, handler:nil)
             // isSubjoin: 默认增补token等通用参数, handler: 增补操作 如参数签名
             // 不需要增补的接口设为 false 即可
+        
+        
+        
+        
         
     }
 }

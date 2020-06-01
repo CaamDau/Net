@@ -14,7 +14,7 @@ import Foundation
 import Alamofire
 import CaamDauExtension
 
-var Net:CD_Net {
+public var Net:CD_Net {
     return CD_Net()
 }
 

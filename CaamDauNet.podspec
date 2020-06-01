@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'CaamDauNet'
-  s.version          = '1.2.1'
+  s.version          = '1.2.2'
   s.summary          = 'CaamDau 系列产品：网络层 Alamofire 、SwiftyJSON、Cache、Codable 扩展.'
   s.description      = <<-DESC
   TODO: CaamDau 系列产品：iOS 便捷开发套件 Swift 版：iOS项目开发通用&非通用型模块代码，多功能组件，可快速集成使用以大幅减少基础工作量；便利性扩展&链式扩展、UI排班组件Form、正则表达式扩展RegEx、计时器管理Timer、简易提示窗HUD、AppDelegate解耦方案、分页控制Page、自定义导航栏Net、阿里矢量图标管理IconFonts、MJRefresh扩展、Alamofire扩展......
