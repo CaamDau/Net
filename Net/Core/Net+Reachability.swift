@@ -10,7 +10,7 @@
 import Foundation
 import Alamofire
 
-public extension CD_Net {
+public extension Net {
     static func reachability(_ host:String = "www.baidu.com", block:NetworkReachabilityManager.Listener? = nil) -> NetworkReachabilityManager? {
         let manager:NetworkReachabilityManager? = NetworkReachabilityManager(host: host)
         manager?.listener = block
@@ -20,7 +20,7 @@ public extension CD_Net {
 }
 
 
-public extension CD_Net.Error {
+public extension Net.Error {
     static func massageFor(_ code:Int) -> String? {
         switch code {
         case -88888:
@@ -43,8 +43,6 @@ public extension CD_Net.Error {
             return "网络连接丢失"
         case -1008:
             return "资源不可用"
-        case -1008:
-            return "您可能没有连接互联网"
         case -1011:
             return "服务器响应错误"
         case -1015, -1016:

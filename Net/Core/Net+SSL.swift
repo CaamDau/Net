@@ -10,7 +10,7 @@
 import Foundation
 import Alamofire
 import CaamDauExtension
-public extension CD_Net {
+public extension Net {
     static func ssl(withHosts hosts:[String], p12:(name:String, pwd:String), bundleForm:(AnyClass, String)? = nil) {
         SessionManager.default.delegate.sessionDidReceiveChallenge = { (session, challenge) -> (URLSession.AuthChallengeDisposition, URLCredential?) in
             switch challenge.protectionSpace.authenticationMethod {
@@ -77,7 +77,7 @@ public extension CD_Net {
     static private func clientAuthentication(_ p12:(name:String, pwd:String), bundleForm:(AnyClass, String)? = nil) -> (URLSession.AuthChallengeDisposition, URLCredential?) {
         debugPrint("客户端证书认证！")
         //获取客户端证书相关信息
-        guard let identityAndTrust = CD_Net.extractIdentity(p12, bundleForm:bundleForm) else {
+        guard let identityAndTrust = Net.extractIdentity(p12, bundleForm:bundleForm) else {
             debugPrint("（不接受认证）")
             return (.cancelAuthenticationChallenge, nil)
         }

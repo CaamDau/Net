@@ -1,7 +1,7 @@
 //Created  on 2019/6/15 by  LCD:https://github.com/liucaide .
 
 /***** 模块文档 *****
- * CD_Net 的目标是 将 Alamofire 进行基础的二次封装，
+ * Net 的目标是 将 Alamofire 进行基础的二次封装，
  * 追求简洁，小成本，能快速拿来使用，使快速开发的效率提升，快速搭建网络层
  * 后面会计划 实现 Rx 的扩展版本
  *
@@ -14,12 +14,12 @@ import Foundation
 import Alamofire
 import CaamDauExtension
 
-public var Net:CD_Net {
-    return CD_Net()
+public var net:Net {
+    return Net()
 }
 
 
-extension CD_Net {
+extension Net {
     public enum RequestStyle {
         case data
         case json
@@ -31,7 +31,7 @@ extension CD_Net {
         public let massage:String
         public init(code:Int, massage:String) {
             self.code = code
-            self.massage = massage.isEmpty ? (CD_Net.Error.massageFor(code) ?? "") : massage
+            self.massage = massage.isEmpty ? (Net.Error.massageFor(code) ?? "") : massage
         }
     }
     
@@ -47,7 +47,7 @@ extension CD_Net {
         /// 开启控制台 print
         public var logHandler:((Any?, [String:String]?, [String:Any]?)->Void)? = nil
         /// 返回数据样式 默认 json
-        public var responseStyle:CD_Net.RequestStyle = .data
+        public var responseStyle:Net.RequestStyle = .data
         /// method 默认 get
         public var method:Alamofire.HTTPMethod = .get
         /// encoding 默认 default
@@ -80,7 +80,7 @@ extension CD_Net {
         public init(){}
     }
 }
-extension CD_Net.Error: LocalizedError {
+extension Net.Error: LocalizedError {
     public var errorDescription: String? {
         return massage
     }
@@ -96,7 +96,7 @@ extension CD_Net.Error: LocalizedError {
 }
 
 
-open class CD_Net {
+open class Net {
     open var method:Alamofire.HTTPMethod = .get
     open var baseURL:String  = ""
     open var path:String  = ""
@@ -106,11 +106,11 @@ open class CD_Net {
     open var headers:[String:String]?
     open var timeoutInterval:TimeInterval = 10
     open var log:Bool = false
-    open var responseStyle:CD_Net.RequestStyle = .data
+    open var responseStyle:Net.RequestStyle = .data
     
     open var statusCodes:[Int] = [200]
     open var success:((Any) ->Void)?
-    open var failure:((CD_Net.Error) ->Void)?
+    open var failure:((Net.Error) ->Void)?
     open var uploadProgress:Request.ProgressHandler?
     
     open var cache:((Data) ->Void)?
@@ -120,20 +120,20 @@ open class CD_Net {
     
     public static var config:Manager = Manager()
     public init() {
-        self.timeoutInterval = CD_Net.config.timeoutInterval
-        self.headers = CD_Net.config.headers
-        self.baseURL = CD_Net.config.baseURL
-        self.log = CD_Net.config.log
-        self.responseStyle = CD_Net.config.responseStyle
-        self.method = CD_Net.config.method
-        self.encoding = CD_Net.config.encoding
+        self.timeoutInterval = Net.config.timeoutInterval
+        self.headers = Net.config.headers
+        self.baseURL = Net.config.baseURL
+        self.log = Net.config.log
+        self.responseStyle = Net.config.responseStyle
+        self.method = Net.config.method
+        self.encoding = Net.config.encoding
     }
 }
 
-extension CD_Net {
+extension Net {
     func logPrint<T>(_ res:DataResponse<T>) {
         guard log else { return }
-        if let logHandler = CD_Net.config.logHandler {
+        if let logHandler = Net.config.logHandler {
             logHandler(res, headers, parameters)
         }else{
             debugPrint("---👉👉👉", res.request?.url ?? "")
@@ -155,11 +155,11 @@ extension CD_Net {
                     self.cache?(da)
                 }
             }else{
-                self.failure?(CD_Net.Error(code: statusCode ?? -88888, massage: ""))
+                self.failure?(Net.Error(code: statusCode ?? -88888, massage: ""))
             }
         case .failure(let error):
             let err = error as NSError
-            self.failure?(CD_Net.Error(code: err.code, massage: err.localizedDescription))
+            self.failure?(Net.Error(code: err.code, massage: err.localizedDescription))
         }
     }
     
@@ -196,7 +196,7 @@ extension CD_Net {
             }
         case .failure(let error):
             let err = error as NSError
-            self.failure?(CD_Net.Error(code: err.code, massage: err.localizedDescription))
+            self.failure?(Net.Error(code: err.code, massage: err.localizedDescription))
         }
     }
     
@@ -252,7 +252,7 @@ extension CD_Net {
     /// 下载，断线续传能力
 }
 
-public extension CD_Net {
+public extension Net {
     @discardableResult
     func method(_ t:Alamofire.HTTPMethod) -> Self {
         method = t
@@ -274,7 +274,7 @@ public extension CD_Net {
         return self
     }
     @discardableResult
-    func uploadParameters(_ t:[CD_Net.UploadParam]) -> Self {
+    func uploadParameters(_ t:[Net.UploadParam]) -> Self {
         uploadParameters = t
         return self
     }
@@ -286,7 +286,7 @@ public extension CD_Net {
     }
     @discardableResult
     func headers(_ t:[String:String]?) -> Self {
-        headers = t ?? CD_Net.config.headers
+        headers = t ?? Net.config.headers
         return self
     }
     @discardableResult
@@ -300,7 +300,7 @@ public extension CD_Net {
         return self
     }
     @discardableResult
-    func responseStyle(_ t:CD_Net.RequestStyle) -> Self {
+    func responseStyle(_ t:Net.RequestStyle) -> Self {
         responseStyle = t
         return self
     }
@@ -315,7 +315,7 @@ public extension CD_Net {
         return self
     }
     @discardableResult
-    func failure(_ t:((CD_Net.Error) ->Void)?) -> Self {
+    func failure(_ t:((Net.Error) ->Void)?) -> Self {
         failure = t
         return self
     }
@@ -341,9 +341,9 @@ public extension CD_Net {
     
     /// 发出请求
     /// isSubjoin 是否增补接口通用参数，默认开启增补
-    /// handler 参数补充操作，如进行参数签名， 默认使用全局 CD_Net.config.parametersHandler
+    /// handler 参数补充操作，如进行参数签名， 默认使用全局 Net.config.parametersHandler
     @discardableResult
-    func request(isSubjoin:Bool = true, handler:(([String:Any]?) -> [String:Any]?)? = CD_Net.config.parametersHandler) -> Self {
+    func request(isSubjoin:Bool = true, handler:(([String:Any]?) -> [String:Any]?)? = Net.config.parametersHandler) -> Self {
         subjoinParameters(isSubjoin, handler)
         requestTo()
         return self
@@ -353,18 +353,18 @@ public extension CD_Net {
     
     /// 发出上传请求
     /// isSubjoin 是否增补接口通用参数，默认开启增补
-    /// handler 参数补充操作，如进行参数签名， 默认使用全局 CD_Net.config.parametersHandler
+    /// handler 参数补充操作，如进行参数签名， 默认使用全局 Net.config.parametersHandler
     @discardableResult
-    func upload(isSubjoin:Bool = true, handler:(([String:Any]?) -> [String:Any]?)? = CD_Net.config.parametersHandler) -> Self {
+    func upload(isSubjoin:Bool = true, handler:(([String:Any]?) -> [String:Any]?)? = Net.config.parametersHandler) -> Self {
         subjoinParameters(isSubjoin, handler)
         uploadFormData()
         return self
     }
     
     private func subjoinParameters(_ subjoin:Bool, _ handler:(([String:Any]?) -> [String:Any]?)?) {
-        if subjoin, !CD_Net.config.parametersSubjoin.isEmpty {
+        if subjoin, !Net.config.parametersSubjoin.isEmpty {
             var paramet =  parameters ?? [:]
-            paramet += CD_Net.config.parametersSubjoin
+            paramet += Net.config.parametersSubjoin
             parameters = paramet
         }
         parameters = handler?(parameters) ?? parameters

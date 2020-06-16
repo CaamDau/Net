@@ -15,7 +15,7 @@ public let storage:Storage<Data>? = {
     return try? Storage<Data>(diskConfig: DiskConfig(name: CD.appId), memoryConfig: MemoryConfig(expiry: .never, countLimit: 10, totalCostLimit: 10), transformer: TransformerFactory.forData())
 }()
 
-public extension CD_Net {
+public extension Net {
     /// 默认使用 url ,相同url 增加 key 标识
     @discardableResult
     func onCache(withData key:String = "", completion:((Data) ->Void)?) -> Self {
@@ -24,8 +24,8 @@ public extension CD_Net {
             switch result {
               case .value(let data):
                 completion?(data)
-              case .error(let error):
-                self?.failure?(CD_Net.Error(code: -1100, massage: ""))
+              case .error(_):
+                self?.failure?(Net.Error(code: -1100, massage: ""))
             }
         })
         return self
@@ -33,9 +33,8 @@ public extension CD_Net {
     
     @discardableResult
     func toCache(withData key:String = "", when:@escaping (Data)->Bool = {_ in true}, customCache:((Data)->Data)? = nil) -> Self {
-        self.cache = { [weak self]res in
+        self.cache = { res in
             guard when(res) else {return}
-            guard let self = self else { return }
             let urlPath = (self.baseURL + self.path) + (key.isEmpty ? "" : ("."+key))
             if let custom = customCache?(res) {
                 storage?.async.setObject(custom, forKey: urlPath, completion: { (result) in
@@ -67,7 +66,7 @@ public extension CD_Net {
             switch result {
               case .value:
                 completion?(true)
-              case .error(let error):
+              case .error(_):
                 completion?(false)
             }
         })
@@ -79,7 +78,7 @@ public extension CD_Net {
             switch result {
               case .value:
                 completion?(true)
-              case .error(let error):
+              case .error(_):
                 completion?(false)
             }
         })

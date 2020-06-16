@@ -8,7 +8,7 @@
 [![Platform](https://img.shields.io/cocoapods/p/CaamDauNet.svg?style=flat)](https://cocoapods.org/pods/CaamDauNet)
 [![](https://img.shields.io/badge/Swift-4.0~5.0-orange.svg?style=flat)](https://cocoapods.org/pods/CaamDauNet)
 
-# CD_Net Alamofire 二次扩展封装
+# Net Alamofire 二次扩展封装
 
 ## Installation
 
@@ -18,7 +18,7 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod 'CaamDauNet/Core' #主要网络功能
 
-pod 'CaamDauNet/All' #CD_Net 所有功能
+pod 'CaamDauNet/All' #Net 所有功能
 pod 'CaamDauNet/SwiftyJSON' #获取 SwiftyJSON 功能
 pod 'CaamDauNet/Cache'  #获取 Cache功能
 pod 'CaamDauNet/Codable' #获取 Codable 功能
@@ -27,15 +27,15 @@ pod 'CaamDauNet/Codable' #获取 Codable 功能
 
 - 统一默认配置
 ```
-        CD_Net.config.method = .post
-        CD_Net.config.encoding = JSONEncoding(options: [])
+        Net.config.method = .post
+        Net.config.encoding = JSONEncoding(options: [])
         // responseStyle 默认为.data
-        CD_Net.config.responseStyle = .json
-        CD_Net.config.headers = [:]
-        CD_Net.config.baseURL = "https://..."
-        CD_Net.config.log = true // 开启控制台打印
+        Net.config.responseStyle = .json
+        Net.config.headers = [:]
+        Net.config.baseURL = "https://..."
+        Net.config.log = true // 开启控制台打印
         // 自定义控制台打印
-        CD_Net.config.logHandler = { (res, h, p) in
+        Net.config.logHandler = { (res, h, p) in
             guard let res = res else { return }
             var url:URL?
             var value:Any?
@@ -57,20 +57,20 @@ pod 'CaamDauNet/Codable' #获取 Codable 功能
             debugPrint("----------  👻")
         }
         
-        CD_Net.config.parametersHandler = { (p) -> [String:Any]? in
+        Net.config.parametersHandler = { (p) -> [String:Any]? in
                 /// 执行参数签名
                 return p
         }
         // - 登录登出  接口增补参数配置
         if !User.shared.token.isEmpty {
-            CD_Net.config.parametersSubjoin = ["token":User.shared.token]
+            Net.config.parametersSubjoin = ["token":User.shared.token]
         }
 
 ```
 - 一个请求
 ```ruby
         var page = 1
-        CD_Net()
+        Net()
             .baseURL("https://httpbin.org/")
             .path("get")
             .method(.get)
@@ -105,7 +105,7 @@ pod 'CaamDauNet/Codable' #获取 Codable 功能
 ```ruby
 
         var reachability:NetworkReachabilityManager?
-        reachability = CD_Net.reachability(block: { (status) in
+        reachability = Net.reachability(block: { (status) in
             debugPrint("Reachability Status:",status)
         })
 ```

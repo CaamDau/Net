@@ -10,7 +10,7 @@
 import Foundation
 import CleanJSON
 
-public extension CD_Net {
+public extension Net {
     /// 使用 Codable 的话 应使用 .request(.data)
     @discardableResult
     func mapModels<T:Codable>(withCodable t:T.Type, succeed:(([T]) ->Void)?) -> Self {
