@@ -20,8 +20,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         var page = 1
-        CD_Net()
-            .baseURL("https://httpbin.org/")
+        
+        net.baseURL("https://httpbin.org/")
             .path("get")
             .method(.get)
             .parameters(["foo": "bar"])
